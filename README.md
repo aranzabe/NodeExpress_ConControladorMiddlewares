@@ -72,40 +72,50 @@ import { addValue,
     removeValueAt,
     updateValueAt } from '../database/database.js'
 
+
 const controlador = {
     funGet : (req,res) => {
         res.status(200).json({'msg' : 'Gestión del vector', 'valores' : getValues()})
     },
-    funGetAt : (req,res) => {
-        res.status(200).json({'pos' : req.params.id, 'valor' : getValue(req.params.id)})
+    funGetAt: (req, res) => {
+        const indice = parseInt(req.params.id, 10);
+
+        res.status(200).json({
+            'pos': indice,
+            'valor': getValue(indice)
+        })
     },
     funPost : (req, res) => {
         let nuevoValor = req.body.valor
-
+    
         addValue(nuevoValor)
         res.status(200).json({'msg' : 'Elemento insertado', 'valores' : getValues()})
-    },
+    },    
     funPostAt : (req, res) => {
         let pos = req.params.id
         let nuevoValor = req.body.valor
-
+    
         addValueAt(nuevoValor, pos)
         res.status(200).json({'msg' : 'Elemento insertado', 'valores' : getValues()})
-    },
+    },    
     funDelete : (req, res) => {
         let indice = parseInt(req.params.id,10)
-
+        
         removeValueAt(indice)
         res.status(200).json({'msg' : 'Elemento borrado', 'valores' : getValues()})
-    },
+    },    
     funPut : (req, res) => {
         let indice = parseInt(req.params.id,10)
-
+    
         updateValueAt(indice, req.body.valor)
         res.status(200).json({'msg' : 'Elemento modificado', 'valores' : getValues()})
     }
 };
 
+// export {
+//     controladorGet,
+//     controladorGetAt
+// }
 export default controlador
 ```
 
@@ -122,11 +132,14 @@ Un **middleware** es una función intermedia que se ejecuta **antes** del contro
 import { size } from '../database/database.js'
 
 const enLimite = (req,res,next) => {
-    if (req.params.id < 0 || req.params.id >= size()){
-        return res.status(203).json({'msg':'Error índice incorrecto'})
-    } else {
-        next()
+    const indice = Number(req.params.id);
+    if (!Number.isInteger(indice) || indice < 0 || indice >= size()) {
+        return res.status(400).json({
+            msg: 'Error índice incorrecto'
+        });
     }
+
+    next();
 }
 
 const otro = (req,res,next) => {

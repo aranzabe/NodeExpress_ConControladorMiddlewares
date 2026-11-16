@@ -8,6 +8,7 @@ import { addValue,
 
 
 const controlador = {
+    
     funGet : (req,res) => {
         res.status(200).json({'msg' : 'Gestión del vector', 'valores' : getValues()})
     },
